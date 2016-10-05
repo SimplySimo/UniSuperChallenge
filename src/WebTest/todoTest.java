@@ -34,16 +34,12 @@ public class todoTest {
 	private String platform;
 	private String browserName;
 	private String browserVersion;
-	
-	
 
 	@Parameterized.Parameters
 	public static LinkedList<String[]> getEnvironments() throws Exception {
 		LinkedList<String[]> env = new LinkedList<String[]>();
 		env.add(new String[] { Platform.WINDOWS.toString(), "chrome", "latest" });
 		env.add(new String[] { Platform.WINDOWS.toString(), "firefox", "latest" });
-
-
 
 		return env;
 	}
@@ -67,14 +63,12 @@ public class todoTest {
 			System.setProperty("webdriver.gecko.driver", "geckodriver.exe");
 			driver = new FirefoxDriver();
 		} else if (browserName == "chrome") {
-			System.setProperty("webdriver.chrome.driver",
-					"chromedriver.exe");
+			System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 			driver = new ChromeDriver();
 		}
 
 		else if (browserName == "edge") {
-			System.setProperty("webdriver.edge.driver",
-					"MicrosoftWebDriver.exe");
+			System.setProperty("webdriver.edge.driver", "MicrosoftWebDriver.exe");
 			driver = new EdgeDriver();
 		} else {
 			System.setProperty("webdriver.gecko.driver", "geckodriver.exe");
@@ -85,7 +79,6 @@ public class todoTest {
 
 	@Test
 	public void testSimple() throws Exception {
-		driver.manage().window().setSize(new Dimension(1000, 1000));
 		WebDriverWait wait = new WebDriverWait(driver, 15);
 
 		Actions action = new Actions(driver);
@@ -99,7 +92,8 @@ public class todoTest {
 		assertEquals("http://todomvc.com/examples/angularjs/#/", this.driver.getCurrentUrl());
 
 		// add new item
-		driver.findElement(By.id("new-todo")).sendKeys("hella" + Keys.ENTER);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@id='todo-form']/input")));
+		driver.findElement(By.xpath("//form[@id='todo-form']/input")).sendKeys("hella" + Keys.ENTER);
 
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ul[@id='todo-list']/li/div/label")));
 		assertEquals("hella", driver.findElement(By.id("todo-list"))
@@ -117,7 +111,7 @@ public class todoTest {
 		} catch (Exception e) {
 			System.out.println("Edit item failed in browser:" + browserName);
 		}
-		
+
 		Thread.sleep(100);
 
 		// complete To-do item
@@ -157,20 +151,20 @@ public class todoTest {
 		Thread.sleep(100);
 
 		// clear a single To-do item from the list completely by clicking the
-		WebElement tmpElement= driver.findElement(By.xpath("//ul[@id='todo-list']/li/div/button"));
-		JavascriptExecutor executor = (JavascriptExecutor)driver;
-		String js = 
-				  "arguments[0].style.height='auto'; arguments[0].style.visibility='visible';";
+		WebElement tmpElement = driver.findElement(By.xpath("//ul[@id='todo-list']/li/div/button"));
+		JavascriptExecutor executor = (JavascriptExecutor) driver;
+		String js = "arguments[0].style.height='auto'; arguments[0].style.visibility='visible';";
 		executor.executeScript(js, tmpElement);
 		executor.executeScript("arguments[0].click();", tmpElement);
-		Thread.sleep(1000);
+		Thread.sleep(100);
 
 		// clear all completed To-do items from the list completely
 		driver.findElement(By.id("clear-completed")).click();
 		List<WebElement> deleteLinks = driver.findElements(By.xpath("//ul[@id='todo-list']/li"));
 		assertTrue(deleteLinks.isEmpty());
-		
-				System.out.println("All besides listed ones above passed in Browser: " + this.browserName);
+		Thread.sleep(1000);
+
+		System.out.println("All besides listed tests above passed in Browser: " + this.browserName);
 
 	}
 
